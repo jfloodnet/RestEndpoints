@@ -1,0 +1,25 @@
+﻿
+<html>
+<head>
+    <title>RESTContracts</title>
+</head>
+    <body>
+        <div id="links">
+            <h2>Navigation</h2>
+            <a href="/" rel="home">Home</a><br />
+        </div>
+        <h1>Velcom to VRestful Command Sender!</h1>
+        <div id="bugs">
+            <ul class="all">
+                @foreach (NServiceBus.ReSTEndpoint.Models.CommandDescriptor command in @Model)
+                {
+                    <li>
+                        <a href="/@command.CommandName">@command.CommandName</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    
+
+    </body>
+</html>

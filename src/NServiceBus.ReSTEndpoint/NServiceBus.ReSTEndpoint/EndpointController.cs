@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Specialized;
 using System.Net.Http;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 
 namespace NServiceBus.ReSTEndpoint
@@ -28,61 +25,19 @@ namespace NServiceBus.ReSTEndpoint
             return Request.CreateResponse(contracts.FindCommand(commandName));
         }
 
-        public HttpResponseMessage Post(object command)
+        public HttpResponseMessage Post(FormDataCollection formData)
         {
-            return Request.CreateResponse("Post(object command)");
-        }
-    }
+            var descriptor = contracts.FindCommand(formData["CommandName"]);
+            var command = Activator.CreateInstance(descriptor.CommandType);
 
-    public class Contracts
-    {
-        private Assembly[] searchAssemblies = new Assembly[] { };
-
-        private Dictionary<string, Type> commands = new Dictionary<string, Type>();
-
-        private Contracts(Assembly[] searchAssemblies)
-        {
-            this.searchAssemblies = searchAssemblies;
-        }
-
-        public static Contracts LookIn(params Assembly[] assembly)
-        {
-            return new Contracts(assembly);
-        }
-
-        public Contracts For(Func<Type, bool> isCommand)
-        {
-            foreach (var commandType in 
-                searchAssemblies.SelectMany(
-                assembly => assembly.GetTypes().Where(t => isCommand(t))))
+            foreach (var property in descriptor.CommandType.GetProperties())
             {
-                commands.Add(commandType.Name, commandType);
+                property.SetValue(command, Convert.ChangeType(formData[property.Name], property.PropertyType));
             }
 
-            return this;
-        }
+            //bus.Send(command); !woo
 
-        public CommandDescriptor FindCommand(string command)
-        {
-            Type type= null;
-            if (!commands.TryGetValue(command, out type))
-                return null;
-
-            return ToDescriptor(type);        
-        }
-
-        public CommandDescriptor[] AllCommands()
-        {
-            return commands.Select(kv => ToDescriptor(kv.Value)).ToArray();
-        }
-
-        private CommandDescriptor ToDescriptor(Type type)
-        {
-            return new CommandDescriptor
-            {
-                CommandName = type.Name,
-                Properties = type.GetProperties().Select(x => x.Name).ToArray()
-            };    
+            return Request.CreateResponse(descriptor);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Hosting;
+﻿using System.Net.Http.Headers;
+using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,15 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
             {
                 // Create HttpCient and make a request to api/values 
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
 
-                var response = client.GetAsync(baseAddress + "api/endpoint").Result;
+                var response = client.GetAsync(baseAddress).Result;
 
                 Console.WriteLine(response);
                 Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                Console.ReadLine(); 
             }
-
-            Console.ReadLine(); 
         }
     }
 

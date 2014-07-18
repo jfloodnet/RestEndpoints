@@ -21,6 +21,8 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
 
             // Configure Web API for self-host. 
             HttpConfiguration config = new HttpConfiguration();
+
+            config.ConfigureContractsEndpoint();
             
             config.Routes.MapHttpRoute( 
                 name: "DefaultApi", 
@@ -30,8 +32,9 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
 
             config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(                
                 Contracts.LookIn(typeof(Program).Assembly)
-                .For(x => typeof(Command).IsAssignableFrom(x))
+                .For(x => typeof(Command).IsAssignableFrom(x) && x != typeof(Command))
                 )); 
+
 
             
             appBuilder.UseWebApi(config); 
