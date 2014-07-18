@@ -31,18 +31,15 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
             );
 
             config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(        
-        
-                Endpoints
+                new Endpoints()
                     .Map("some.endpoint.1s")
                         .LookIn(typeof(Program).Assembly)
                         .For(Endpoint1Contracts())
-                    .ThenMap("some.endpoint.2")            
-                
-                    .LookIn(typeof(Program).Assembly)
-                    .For(Endpoint2Contracts())
-                )); 
 
-
+                    .Map("some.endpoint.2")                
+                        .LookIn(typeof(Program).Assembly)
+                        .For(Endpoint2Contracts())
+                ));
             
             appBuilder.UseWebApi(config); 
         }
@@ -61,18 +58,5 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
         {
             Type endpoint = typeof(EndpointController);
         } 
-    }
-
-    public class ControllerFactory : IHttpControllerActivator
-    {
-        Endpoints endpoints;
-        public ControllerFactory(Endpoints endpoints)
-        {
-            this.endpoints = endpoints;
-        }
-        public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
-        {
-            return new EndpointController(endpoints);
-        }
     }
 }

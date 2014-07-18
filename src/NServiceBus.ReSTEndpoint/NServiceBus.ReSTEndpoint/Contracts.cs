@@ -10,22 +10,17 @@ namespace NServiceBus.ReSTEndpoint
     {
         private readonly Dictionary<string, ContractDescriptor[]> map;
 
-        private Endpoints()
+        public Endpoints()
         {
             this.map = new Dictionary<string,ContractDescriptor[]>();
         }  
 
-        private Endpoints(Dictionary<string, ContractDescriptor[]> map)
+        private Endpoints(IEnumerable<KeyValuePair<string, ContractDescriptor[]>> map)
         {
-            this.map = map;
+            this.map = map.ToDictionary(x => x.Key,x => x.Value);
         }        
 
-        public static Contracts Map(string endpointName)
-        {
-            return new Contracts(endpointName, new Endpoints());
-        }
-
-        public Contracts ThenMap(string endpointName)
+        public Contracts Map(string endpointName)
         {
             return new Contracts(endpointName, this);
         }
@@ -36,9 +31,9 @@ namespace NServiceBus.ReSTEndpoint
 
             private readonly string endpointName;
 
-            private Assembly[] searchAssemblies = new Assembly[] { };
+            private readonly IEnumerable<Assembly> searchAssemblies = new Assembly[] { };
 
-            private Dictionary<string, Type> contracts = new Dictionary<string, Type>();
+            private readonly IEnumerable<KeyValuePair<string, Type>> contracts = new Dictionary<string, Type>();
 
             internal Contracts(string endpointName, Endpoints endpoints, Assembly[] searchAssemblies = null)
             {
@@ -63,7 +58,7 @@ namespace NServiceBus.ReSTEndpoint
                     { endpointName, contracts.Select(c => ToDescriptor(c, endpointName)).ToArray() }
                 };
 
-                return new Endpoints(this.endpoints.map.Union(thisEndpoint).ToDictionary(x => x.Key, x => x.Value));
+                return new Endpoints(this.endpoints.map.Union(thisEndpoint));
             }       
         }
 
