@@ -30,14 +30,31 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
                 defaults: new { id = RouteParameter.Optional } 
             );
 
-            config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(                
-                Contracts.LookIn(typeof(Program).Assembly)
-                .For(x => typeof(Command).IsAssignableFrom(x) && x != typeof(Command))
+            config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(        
+        
+                Endpoints
+                    .Map("some.endpoint.1s")
+                        .LookIn(typeof(Program).Assembly)
+                        .For(Endpoint1Contracts())
+                    .ThenMap("some.endpoint.2")            
+                
+                    .LookIn(typeof(Program).Assembly)
+                    .For(Endpoint2Contracts())
                 )); 
 
 
             
             appBuilder.UseWebApi(config); 
+        }
+
+        private Func<Type, bool> Endpoint1Contracts()
+        {
+            return x => typeof(Endpoint1).IsAssignableFrom(x) && x != typeof(Endpoint1);
+        }
+
+        private Func<Type, bool> Endpoint2Contracts()
+        {
+            return x => typeof(Endpoint2).IsAssignableFrom(x) && x != typeof(Endpoint2);
         }
 
         private void LoadEndpointControllerAssembly()
@@ -48,14 +65,14 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
 
     public class ControllerFactory : IHttpControllerActivator
     {
-        Contracts contracts;
-        public ControllerFactory(Contracts contracts)
+        Endpoints endpoints;
+        public ControllerFactory(Endpoints endpoints)
         {
-            this.contracts = contracts;
+            this.endpoints = endpoints;
         }
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
-            return new EndpointController(contracts);
+            return new EndpointController(endpoints);
         }
     }
 }

@@ -8,29 +8,34 @@ namespace NServiceBus.ReSTEndpoint
 {
     public class EndpointController : ApiController
     {
-        private readonly Contracts contracts;
+        private readonly Endpoints endpoints;
 
-        public EndpointController(Contracts  contracts)
+        public EndpointController(Endpoints endpoints)
         {
-            this.contracts = contracts;
+            this.endpoints = endpoints;
         }
 
         public HttpResponseMessage Get()
         {
-            return Request.CreateResponse(contracts.AllCommands());
+            return Request.CreateResponse(endpoints.AllEndpoints());
         }
 
-        public HttpResponseMessage Get(string commandName)
+        public HttpResponseMessage Get(string endpointName)
         {
-            return Request.CreateResponse(contracts.FindCommand(commandName));
+            return Request.CreateResponse(endpoints.ContractsIn(endpointName));
         }
 
-        public HttpResponseMessage Post(FormDataCollection formData)
+        public HttpResponseMessage Get(string endpointName, string contractName)
         {
-            var descriptor = contracts.FindCommand(formData["CommandName"]);
-            var command = Activator.CreateInstance(descriptor.CommandType);
+            return Request.CreateResponse(endpoints.FindContract(endpointName, contractName));
+        }
 
-            foreach (var property in descriptor.CommandType.GetProperties())
+        public HttpResponseMessage Post(string endpointName, string contractName, FormDataCollection formData)
+        {
+            var descriptor = endpoints.FindContract(endpointName, contractName);
+            var command = Activator.CreateInstance(descriptor.Type);
+
+            foreach (var property in descriptor.Type.GetProperties())
             {
                 property.SetValue(command, Convert.ChangeType(formData[property.Name], property.PropertyType));
             }

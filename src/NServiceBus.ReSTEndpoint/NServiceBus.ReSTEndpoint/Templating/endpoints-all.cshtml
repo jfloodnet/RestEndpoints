@@ -11,10 +11,10 @@
         <h1>Velcom to VRestful Command Sender!</h1>
         <div id="bugs">
             <ul class="all">
-                @foreach (NServiceBus.ReSTEndpoint.Models.ContractDescriptor contract in @Model)
+                @foreach (string endpointName in @Model)
                 {
                     <li>
-                        <a href="/@contract.Endpoint/@contract.Name">@contract.Name</a>
+                        <a href="/@endpointName">@endpointName</a>
                     </li>
                 }
             </ul>

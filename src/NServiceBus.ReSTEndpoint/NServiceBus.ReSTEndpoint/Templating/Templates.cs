@@ -5,6 +5,16 @@ namespace NServiceBus.ReSTEndpoint.Templating
 {
     public class Templates
     {
+        public static string AllEndpoints
+        {
+            get
+            {
+                return
+                    GetResource(
+                        "NServiceBus.ReSTEndpoint.Templating.endpoints-all.cshtml");
+            }
+        }
+
         public static string AllCommands
         {
             get
@@ -32,6 +42,6 @@ namespace NServiceBus.ReSTEndpoint.Templating
             {
                 return reader.ReadToEnd();
             }
-        }
+        }        
     }
 }

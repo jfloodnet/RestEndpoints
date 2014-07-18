@@ -6,9 +6,10 @@ using System.Text;
 
 namespace NServiceBus.ReSTEndpoint.Models
 {
-    public class CommandDescriptor
+    public class ContractDescriptor
     {
-        public string CommandName { get; set; }
-        public Type CommandType { get; set; }
+        public string Endpoint { get; set; }
+        public string Name { get; set; }
+        public Type Type { get; set; }
     }
 }

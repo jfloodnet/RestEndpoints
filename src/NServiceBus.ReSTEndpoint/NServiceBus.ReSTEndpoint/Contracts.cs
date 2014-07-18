@@ -6,55 +6,94 @@ using NServiceBus.ReSTEndpoint.Models;
 
 namespace NServiceBus.ReSTEndpoint
 {
-    public class Contracts
+    public class Endpoints
     {
-        private Assembly[] searchAssemblies = new Assembly[] { };
+        private readonly Dictionary<string, ContractDescriptor[]> map;
 
-        private Dictionary<string, Type> commands = new Dictionary<string, Type>();
-
-        private Contracts(Assembly[] searchAssemblies)
+        private Endpoints()
         {
-            this.searchAssemblies = searchAssemblies;
+            this.map = new Dictionary<string,ContractDescriptor[]>();
+        }  
+
+        private Endpoints(Dictionary<string, ContractDescriptor[]> map)
+        {
+            this.map = map;
+        }        
+
+        public static Contracts Map(string endpointName)
+        {
+            return new Contracts(endpointName, new Endpoints());
         }
 
-        public static Contracts LookIn(params Assembly[] assembly)
+        public Contracts ThenMap(string endpointName)
         {
-            return new Contracts(assembly);
+            return new Contracts(endpointName, this);
         }
 
-        public Contracts For(Func<Type, bool> isCommand)
+        public class Contracts
         {
-            foreach (var commandType in 
-                searchAssemblies.SelectMany(
-                    assembly => assembly.GetTypes().Where(isCommand)))
+            private readonly Endpoints endpoints;
+
+            private readonly string endpointName;
+
+            private Assembly[] searchAssemblies = new Assembly[] { };
+
+            private Dictionary<string, Type> contracts = new Dictionary<string, Type>();
+
+            internal Contracts(string endpointName, Endpoints endpoints, Assembly[] searchAssemblies = null)
             {
-                commands.Add(commandType.Name, commandType);
+                this.endpointName = endpointName;
+                this.endpoints = endpoints;
+                this.searchAssemblies = searchAssemblies;
             }
 
-            return this;
+            public Contracts LookIn(params Assembly[] assembly)
+            {
+                return new Contracts(this.endpointName, this.endpoints, assembly);
+            }
+
+            public Endpoints For(Func<Type, bool> isContract)
+            {
+                var contracts =
+                    searchAssemblies.SelectMany(
+                        assembly => assembly.GetTypes().Where(isContract));
+
+                var thisEndpoint = new Dictionary<string, ContractDescriptor[]>
+                {
+                    { endpointName, contracts.Select(c => ToDescriptor(c, endpointName)).ToArray() }
+                };
+
+                return new Endpoints(this.endpoints.map.Union(thisEndpoint).ToDictionary(x => x.Key, x => x.Value));
+            }       
         }
 
-        public CommandDescriptor FindCommand(string command)
+        public string[] AllEndpoints()
         {
-            Type type= null;
-            if (!commands.TryGetValue(command, out type))
+            return this.map.Select(x => x.Key).ToArray();
+        }
+
+        public ContractDescriptor FindContract(string endpointName, string contractName)
+        {
+            return ContractsIn(endpointName).First(x => x.Name.Equals(contractName));
+        }
+
+        public ContractDescriptor[] ContractsIn(string endpointName)
+        {
+            ContractDescriptor[] contracts = null;
+            if (!map.TryGetValue(endpointName, out contracts))
                 return null;
 
-            return ToDescriptor(type);        
+            return contracts;
         }
 
-        public CommandDescriptor[] AllCommands()
+        private static ContractDescriptor ToDescriptor(Type type, string endpointName)
         {
-            return commands.Select(kv => ToDescriptor(kv.Value)).ToArray();
-        }
-
-        private CommandDescriptor ToDescriptor(Type type)
-        {
-            return new CommandDescriptor
+            return new ContractDescriptor
             {
-                CommandName = type.Name,
-                CommandType = type,
-            };    
+                Endpoint = endpointName,
+                Name = type.Name,
+                Type = type,
+            };
         }
     }
 }

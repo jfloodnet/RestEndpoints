@@ -12,9 +12,9 @@
         <h1>Velcom to VRestful Command Sender!</h1>
         <div id="bugs">
         
-            <form action="@Model.CommandName" method="POST" title="@Model.CommandName">
-                <input name="CommandName" type="hidden" value="@Model.CommandName" /><br />
-                @foreach (PropertyInfo pi in @Model.CommandType.GetProperties())
+            <form action="@Model.Name" method="POST" title="@Model.Name">
+                <input name="CommandName" type="hidden" value="@Model.Name" /><br />
+                @foreach (PropertyInfo pi in @Model.Type.GetProperties())
                 {
                     <label for="@pi.Name">@pi.Name</label><input name="@pi.Name" type="text" value="" /><br/>
                 }

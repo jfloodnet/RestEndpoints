@@ -32,14 +32,5 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
         }
     }
 
-    public abstract class Command
-    {
-    }
-
-    public class TestCommand : Command
-    {
-        public string TestName { get; set; }
-        public string StringProperty { get; set; }
-        public int IntegerProperty { get; set; }
-    }
+   
 }
