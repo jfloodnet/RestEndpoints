@@ -11,5 +11,7 @@ namespace NServiceBus.ReSTEndpoint.Models
         public string Endpoint { get; set; }
         public string Name { get; set; }
         public Type Type { get; set; }
+
+        public string ResponseMessage { get; set; }
     }
 }

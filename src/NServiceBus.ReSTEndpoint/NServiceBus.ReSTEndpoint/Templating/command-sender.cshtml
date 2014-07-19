@@ -16,9 +16,9 @@
                 <input name="CommandName" type="hidden" value="@Model.Name" /><br />
                 @foreach (PropertyInfo pi in @Model.Type.GetProperties())
                 {
-                    <label for="@pi.Name">@pi.Name</label><input name="@pi.Name" type="text" value="" /><br/>
+                    <label style="width:100px;display:inline-block" for="@pi.Name">@pi.Name</label><input name="@pi.Name" type="text" value="" /><br/>
                 }
-                <input name="submit" type="submit" value="Send" />
+                <input name="submit" type="submit" value="Send" /><label style="color:red">@Model.ResponseMessage</label>
             </form>
         
         </div>

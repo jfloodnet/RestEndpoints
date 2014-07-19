@@ -76,7 +76,7 @@
   <ItemGroup>
     <Compile Include="ConfigExtensions.cs" />
     <Compile Include="Contracts.cs" />
-    <Compile Include="MediaTypeFormmatters\RazorMediaTypeFormatter.cs" />
+    <Compile Include="MediaTypeFormatters\RazorMediaTypeFormatter.cs" />
     <Compile Include="Models\CommandDescriptor.cs" />
     <Compile Include="EndpointController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
