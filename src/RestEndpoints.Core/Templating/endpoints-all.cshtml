@@ -1,0 +1,25 @@
+﻿
+<html>
+<head>
+    <title>RESTEndpoints</title>
+</head>
+    <body>
+        <div id="links">
+            <h2>Navigation</h2>
+            <a href="/" rel="home">Home</a><br />
+        </div>
+        <h1>Welcome to Restful Endpoints!</h1>
+        <div id="bugs">
+            <ul class="all">
+                @foreach (string endpointName in @Model)
+                {
+                    <li>
+                        <a href="/@endpointName">@endpointName</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    
+
+    </body>
+</html>

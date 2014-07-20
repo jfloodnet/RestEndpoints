@@ -1,0 +1,28 @@
+﻿@using System.Reflection
+
+<html>
+<head>
+    <title>RESTEndpoints</title>
+</head>
+    <body>
+        <div id="links">
+            <h2>Navigation</h2>
+            <a href="/" rel="home">Home</a><br />
+        </div>
+        <h1>Welcome to Restful Endpoints!</h1>
+        <div id="bugs">
+        
+            <form action="@Model.Name" method="POST" title="@Model.Name">
+                <input name="CommandName" type="hidden" value="@Model.Name" /><br />
+                @foreach (PropertyInfo pi in @Model.Type.GetProperties())
+                {
+                    <label style="width:150px;display:inline-block" for="@pi.Name">@pi.Name</label><input name="@pi.Name" type="text" value="" /><br/>
+                }
+                <input name="submit" type="submit" value="Send" /><label style="color:red">@Model.ResponseMessage</label>
+            </form>
+        
+        </div>
+    
+
+    </body>
+</html>
