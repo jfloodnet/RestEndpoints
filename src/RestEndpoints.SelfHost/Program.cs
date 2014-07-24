@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics;
+using System.Net.Http.Headers;
 using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
 
                 var response = client.GetAsync(baseAddress).Result;
+
+                Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "http://localhost:9000");
 
                 Console.WriteLine(response);
                 Console.WriteLine(response.Content.ReadAsStringAsync().Result);

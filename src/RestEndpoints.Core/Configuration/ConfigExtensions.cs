@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using RestEndpoints.Core.MediaTypeFormatters;
+using RestEndpoints.Core.Formatters;
 using RestEndpoints.Core.Models;
 using RestEndpoints.Core.Templating;
 
@@ -21,7 +21,10 @@ namespace RestEndpoints.Core.Configuration
                    contractName = RouteParameter.Optional 
                }
            );
-            config.Formatters.Add(new FormUrlEncodedMediaTypeFormatter());
+
+            
+            config.Formatters.Insert(0, new ContractInstanceFormDataFormatter());
+
             config.Formatters.Add(
                 new RazorMediaTypeFormatter<string[]>(
                 Templates.AllEndpoints, new MediaTypeHeaderValue("text/html")));            

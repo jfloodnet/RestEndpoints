@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Net.Http;
-using System.Net.Http.Formatting;
+﻿using System.Net.Http;
 using System.Web.Http;
+using RestEndpoints.Core.Models;
 
 namespace RestEndpoints.Core
 {
@@ -30,45 +28,12 @@ namespace RestEndpoints.Core
             return Request.CreateResponse(endpoints.FindContract(endpointName, contractName));
         }
 
-        public HttpResponseMessage Post(string endpointName, string contractName, FormDataCollection formData)
+        public HttpResponseMessage Post(string endpointName, string contractName, ContractInstance instance)
         {
             var descriptor = endpoints.FindContract(endpointName, contractName);
-            var contract = Activator.CreateInstance(descriptor.Type);            
-
-            foreach (var property in descriptor.Type.GetProperties())
-            {
-                var propertyValue = formData[property.Name];     
-
-                object value = null;
-                if (propertyValue.TryConvert(property.PropertyType, out value))
-                {
-                    property.SetValue(contract, value);
-                }
-                else
-                {
-                    descriptor.ResponseMessage = string.Format("Value for '{0}' provided was in an incorrect format.", property.Name);
-                    return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, descriptor);
-                }
-            }
-
+            var message = instance.ToInstanceOf(descriptor.Type);
+            descriptor.Receive(message);
             return Request.CreateResponse(descriptor);
-        }
-    }
-
-    internal static class TypeConverter
-    {
-        public static bool TryConvert(this object obj, Type conversionType, out object value)
-        {
-            value = null;
-            try
-            {
-                value = Convert.ChangeType(obj, conversionType);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;                
-            }
         }
     }
 }

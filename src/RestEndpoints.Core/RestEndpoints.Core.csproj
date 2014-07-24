@@ -76,11 +76,14 @@
   <ItemGroup>
     <Compile Include="Configuration\ConfigExtensions.cs" />
     <Compile Include="Endpoints.cs" />
-    <Compile Include="MediaTypeFormatters\RazorMediaTypeFormatter.cs" />
-    <Compile Include="Models\CommandDescriptor.cs" />
+    <Compile Include="Formatters\ContractInstanceFormatter.cs" />
+    <Compile Include="Formatters\RazorMediaTypeFormatter.cs" />
+    <Compile Include="Models\ContractDescriptor.cs" />
     <Compile Include="EndpointController.cs" />
+    <Compile Include="Models\ContractInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Templating\Templates.cs" />
+    <Compile Include="Utils\TypeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

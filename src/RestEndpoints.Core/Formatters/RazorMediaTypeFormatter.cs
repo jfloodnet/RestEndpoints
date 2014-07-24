@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace RestEndpoints.Core.MediaTypeFormatters
+namespace RestEndpoints.Core.Formatters
 {
     public class RazorMediaTypeFormatter<T> : MediaTypeFormatter
     {
@@ -24,7 +25,7 @@ namespace RestEndpoints.Core.MediaTypeFormatters
             return (type == typeof(T) || type.IsSubclassOf(typeof(T)));
         }
 
-        public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, System.Net.Http.HttpContent content, TransportContext transportContext)
+        public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
         {
             return Task.Factory.StartNew(() => WriteStream(value, writeStream));
         }
