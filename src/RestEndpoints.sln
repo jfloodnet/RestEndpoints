@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestEndpoints.Core", "RestEndpoints.Core\RestEndpoints.Core.csproj", "{D7A2249E-C3C9-4AC4-9101-CFB715FC6816}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestEndpoints.SelfHost", "RestEndpoints.SelfHost\RestEndpoints.SelfHost.csproj", "{2B3AAC65-A86C-47E2-ACE9-0ECB1B3B630D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestEndpoints.Test", "RestEndpoints.Test\RestEndpoints.Test.csproj", "{8950CE87-95C0-4C85-98BB-90EF0CE79D1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +23,10 @@ Global
 		{2B3AAC65-A86C-47E2-ACE9-0ECB1B3B630D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B3AAC65-A86C-47E2-ACE9-0ECB1B3B630D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B3AAC65-A86C-47E2-ACE9-0ECB1B3B630D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8950CE87-95C0-4C85-98BB-90EF0CE79D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8950CE87-95C0-4C85-98BB-90EF0CE79D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8950CE87-95C0-4C85-98BB-90EF0CE79D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8950CE87-95C0-4C85-98BB-90EF0CE79D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
