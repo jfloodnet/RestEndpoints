@@ -4,7 +4,7 @@ namespace RestEndpoints.Core.Models
 {
     public class ContractDescriptor
     {
-        private readonly Action<object> receiveAction = _ => {};
+        private readonly Action<object> dispatch = _ => {};
 
         public string Endpoint { get; set; }
         public string Name { get; set; }
@@ -12,9 +12,9 @@ namespace RestEndpoints.Core.Models
 
         public string ResponseMessage { get; set; }
 
-        public void Receive(object message)
+        public void Dispatch(object message)
         {
-            receiveAction(message);
+            this.dispatch(message);
         }
     }
 }
