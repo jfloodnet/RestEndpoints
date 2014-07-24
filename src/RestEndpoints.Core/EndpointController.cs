@@ -32,7 +32,7 @@ namespace RestEndpoints.Core
         {
             var descriptor = endpoints.FindContract(endpointName, contractName);
             var message = instance.ToInstanceOf(descriptor.Type);
-            descriptor.Dispatch(message);
+            this.endpoints.Dispatch(endpointName, message);
             return Request.CreateResponse(descriptor);
         }
     }

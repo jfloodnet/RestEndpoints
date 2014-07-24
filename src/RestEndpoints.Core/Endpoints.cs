@@ -9,10 +9,11 @@ namespace RestEndpoints.Core
     public class Endpoints
     {
         private readonly Dictionary<string, ContractDescriptor[]> map;
+        private Action<string, object> dispatch = (e,c) => {};
 
         public Endpoints()
         {
-            this.map = new Dictionary<string,ContractDescriptor[]>();
+            this.map = new Dictionary<string, ContractDescriptor[]>();
         }  
 
         private Endpoints(IEnumerable<KeyValuePair<string, ContractDescriptor[]>> map)
@@ -25,6 +26,12 @@ namespace RestEndpoints.Core
             return new Contracts(endpointName, this);
         }
 
+        public Endpoints DispatchWith(Action<string, object> dispatch)
+        {
+            this.dispatch = dispatch;
+            return this;
+        }
+
         public class Contracts
         {
             private readonly Endpoints endpoints;
@@ -32,8 +39,6 @@ namespace RestEndpoints.Core
             private readonly string endpointName;
 
             private readonly IEnumerable<Assembly> searchAssemblies = new Assembly[] { };
-
-            private readonly IEnumerable<KeyValuePair<string, Type>> contracts = new Dictionary<string, Type>();
 
             internal Contracts(string endpointName, Endpoints endpoints, Assembly[] searchAssemblies = null)
             {
@@ -59,8 +64,7 @@ namespace RestEndpoints.Core
                 };
 
                 return new Endpoints(this.endpoints.map.Union(thisEndpoint));
-            }  
-
+            }
         }
 
         public string[] AllEndpoints()
@@ -80,6 +84,11 @@ namespace RestEndpoints.Core
                 return null;
 
             return contracts;
+        }
+
+        public void Dispatch(string endpoint, object message)
+        {
+            this.dispatch(endpoint, message);
         }
 
         private static ContractDescriptor ToDescriptor(Type type, string endpointName)

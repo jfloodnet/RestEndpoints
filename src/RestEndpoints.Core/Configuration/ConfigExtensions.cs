@@ -22,7 +22,6 @@ namespace RestEndpoints.Core.Configuration
                }
            );
 
-            
             config.Formatters.Insert(0, new ContractInstanceFormDataFormatter());
 
             config.Formatters.Add(
