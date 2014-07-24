@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Ploeh.AutoFixture.Xunit;
 using Ploeh.SemanticComparison.Fluent;
@@ -17,8 +16,8 @@ namespace RestEndpoints.Test
         public When_message_posted_as_Json()
         {
             formatter = new ContractInstanceJsonFormatter();
-            
         }
+
         [Fact]
         public void Should_support_application_json()
         {
@@ -35,12 +34,5 @@ namespace RestEndpoints.Test
              
             expected.ShouldEqual(actual);
         }
-    }
-
-    public class TestContract 
-    {
-        public Guid AGuid { get; set; }
-        public string AString { get; set; }
-        public int AnInt { get; set; }
     }
 }

@@ -74,15 +74,14 @@ namespace RestEndpoints.Core
 
         public ContractDescriptor FindContract(string endpointName, string contractName)
         {
-            return ContractsIn(endpointName).First(x => x.Name.Equals(contractName));
+            return ContractsIn(endpointName).FirstOrDefault(x => x.Name.Equals(contractName));
         }
 
         public ContractDescriptor[] ContractsIn(string endpointName)
         {
             ContractDescriptor[] contracts = null;
             if (!map.TryGetValue(endpointName, out contracts))
-                return null;
-
+                return Enumerable.Empty<ContractDescriptor>().ToArray();
             return contracts;
         }
 

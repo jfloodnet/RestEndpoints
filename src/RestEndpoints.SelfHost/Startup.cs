@@ -34,6 +34,7 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
             );
 
             config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(
+
                 new Endpoints()
                     .ForEndpoint("Billing")
                         .LookIn(typeof(Program).Assembly)

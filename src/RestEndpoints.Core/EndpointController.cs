@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using RestEndpoints.Core.Models;
 
@@ -20,12 +22,26 @@ namespace RestEndpoints.Core
 
         public HttpResponseMessage Get(string endpointName)
         {
+            var contracts = endpoints.ContractsIn(endpointName);
+
+            if (!contracts.Any())
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, endpoints.AllEndpoints());
+            }
+
             return Request.CreateResponse(endpoints.ContractsIn(endpointName));
         }
 
         public HttpResponseMessage Get(string endpointName, string contractName)
         {
-            return Request.CreateResponse(endpoints.FindContract(endpointName, contractName));
+            var contract = endpoints.FindContract(endpointName, contractName);
+
+            if (contract == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, endpoints.AllEndpoints());
+            }
+
+            return Request.CreateResponse(contract);
         }
 
         public HttpResponseMessage Post(string endpointName, string contractName, ContractInstance instance)
