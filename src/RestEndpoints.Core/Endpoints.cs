@@ -26,7 +26,7 @@ namespace RestEndpoints.Core
             return new Contracts(endpointName, this);
         }
 
-        public Endpoints DispatchWith(Action<string, object> dispatch)
+        public Endpoints WhenMessageReceived(Action<string, object> dispatch)
         {
             this.dispatch = dispatch;
             return this;

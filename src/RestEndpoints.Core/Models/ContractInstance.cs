@@ -13,7 +13,7 @@ namespace RestEndpoints.Core.Models
             this.message = value;
         }
 
-        public object ToInstanceOf(Type type)
+        public object CreateMessage(Type type)
         {
             var contract = Activator.CreateInstance(type);
 

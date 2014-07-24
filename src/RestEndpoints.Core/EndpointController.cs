@@ -31,7 +31,7 @@ namespace RestEndpoints.Core
         public HttpResponseMessage Post(string endpointName, string contractName, ContractInstance instance)
         {
             var descriptor = endpoints.FindContract(endpointName, contractName);
-            var message = instance.ToInstanceOf(descriptor.Type);
+            var message = instance.CreateMessage(descriptor.Type);
             this.endpoints.Dispatch(endpointName, message);
             return Request.CreateResponse(descriptor);
         }

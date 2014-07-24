@@ -1,4 +1,5 @@
-﻿using Owin;
+﻿using Newtonsoft.Json;
+using Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,6 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
             );
 
             config.Services.Replace(typeof(IHttpControllerActivator), new ControllerFactory(
-
                 new Endpoints()
                     .ForEndpoint("Billing")
                         .LookIn(typeof(Program).Assembly)
@@ -47,6 +47,12 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
                         .LookIn(typeof(Program).Assembly)
                         .For(ClientContracts()                       
                      )
+
+                     .WhenMessageReceived((endpointName, message) =>
+                         Console.WriteLine(
+                         "Dispatched to '{0}', message: {1}", 
+                         endpointName, 
+                         JsonConvert.SerializeObject(message)))
                 ));
 
             appBuilder.UseWebApi(config); 
