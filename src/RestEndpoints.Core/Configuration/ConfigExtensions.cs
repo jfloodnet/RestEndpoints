@@ -23,6 +23,7 @@ namespace RestEndpoints.Core.Configuration
            );
 
             config.Formatters.Insert(0, new ContractInstanceFormDataFormatter());
+            config.Formatters.Insert(1, new ContractInstanceJsonFormatter());
 
             config.Formatters.Add(
                 new RazorMediaTypeFormatter<string[]>(
