@@ -27,7 +27,7 @@ namespace RestEndpoints.Test
         [Theory, AutoData]
         public void ContractInstance_should_be_capable_of_creating_instance_of_message(TestContract contract)
         {
-            var sut = formatter.CreateContractInsanceFromJson(JsonConvert.SerializeObject(contract));
+            var sut = formatter.CreateContractInstanceFrom(JsonConvert.SerializeObject(contract));
 
             var expected = contract.AsSource().OfLikeness<TestContract>();
             var actual = (TestContract)sut.CreateMessage(typeof (TestContract));

@@ -38,13 +38,13 @@ namespace RestEndpoints.Core.Formatters
             IFormatterLogger formatterLogger,
             CancellationToken cancellationToken)
         {
-            var body = await content.ReadAsStringAsync();
-            return CreateContractInsanceFromJson(body);
+            var json = await content.ReadAsStringAsync();
+            return CreateContractInstanceFrom(json);
         }
 
-        public ContractInstance CreateContractInsanceFromJson(string body)
+        public ContractInstance CreateContractInstanceFrom(string json)
         {
-            var values = JsonConvert.DeserializeObject<JObject>(body)
+            var values = JsonConvert.DeserializeObject<JObject>(json)
                 .Properties()
                 .ToDictionary(
                     k => k.Name,
