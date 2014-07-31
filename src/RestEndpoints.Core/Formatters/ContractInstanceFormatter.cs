@@ -14,50 +14,11 @@ using RestEndpoints.Core.Models;
 
 namespace RestEndpoints.Core.Formatters
 {
-    public class ContractInstanceJsonFormatter : MediaTypeFormatter
+    public class ContractInstanceFormatter : MediaTypeFormatter
     {
-        public ContractInstanceJsonFormatter()
+        public ContractInstanceFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json"));
-        }
-
-        public override bool CanReadType(Type type)
-        {
-            return type == typeof(ContractInstance);
-        }
-
-        public override bool CanWriteType(Type type)
-        {
-            return false;
-        }
-
-        public override async Task<object> ReadFromStreamAsync(
-            Type type,
-            Stream readStream,
-            HttpContent content,
-            IFormatterLogger formatterLogger,
-            CancellationToken cancellationToken)
-        {
-            var json = await content.ReadAsStringAsync();
-            return CreateContractInstanceFrom(json);
-        }
-
-        public ContractInstance CreateContractInstanceFrom(string json)
-        {
-            var values = JsonConvert.DeserializeObject<JObject>(json)
-                .Properties()
-                .ToDictionary(
-                    k => k.Name,
-                    v => v.Value.ToString());
-
-            return new ContractInstance(values);
-        }
-
-    }
-    public class ContractInstanceFormDataFormatter : MediaTypeFormatter
-    {
-        public ContractInstanceFormDataFormatter()
-        {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/x-www-form-urlencoded"));
         }
 
@@ -78,13 +39,19 @@ namespace RestEndpoints.Core.Formatters
             IFormatterLogger formatterLogger,
             CancellationToken cancellationToken)
         {
-            var formData = await content.ReadAsFormDataAsync(cancellationToken);
-            return CreateContractInsanceFrom(formData);
+            if (content.IsFormData())
+            {
+                var formData = await content.ReadAsFormDataAsync(cancellationToken);
+                return CreateContractInsanceFrom(formData);
+            }
+
+            var json = await content.ReadAsStringAsync();
+            return new JsonContractInstance(json);
         }
 
         public ContractInstance CreateContractInsanceFrom(NameValueCollection formData)
         {
-            return new ContractInstance(formData.AllKeys.ToDictionary(k => k, k => formData[k]));
+            return new FormDataContractInstance(formData.AllKeys.ToDictionary(k => k, k => formData[k]));
         }
     }
 }

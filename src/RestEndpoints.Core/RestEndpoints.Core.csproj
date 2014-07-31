@@ -81,6 +81,8 @@
     <Compile Include="Models\ContractDescriptor.cs" />
     <Compile Include="EndpointController.cs" />
     <Compile Include="Models\ContractInstance.cs" />
+    <Compile Include="Models\FormDataContractInstance.cs" />
+    <Compile Include="Models\JsonContractInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Templating\Templates.cs" />
     <Compile Include="Utils\TypeConverter.cs" />

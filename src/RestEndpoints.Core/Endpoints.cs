@@ -9,15 +9,22 @@ namespace RestEndpoints.Core
     public class Endpoints
     {
         private readonly Dictionary<string, ContractDescriptor[]> map;
-        private Action<string, object> dispatch = (e,c) => {};
+
+        private Action<string, object> dispatch = (e, c) =>
+        {
+            throw new Exception("No dispatcher set");
+        };
 
         public Endpoints()
         {
             this.map = new Dictionary<string, ContractDescriptor[]>();
-        }  
+        }
 
-        private Endpoints(IEnumerable<KeyValuePair<string, ContractDescriptor[]>> map)
+        private Endpoints(IEnumerable<KeyValuePair<string, ContractDescriptor[]>> map, Action<string, object> dispatcher)
         {
+            if (map == null) throw new ArgumentNullException("map");
+
+            this.dispatch = dispatcher ?? this.dispatch;
             this.map = map.ToDictionary(x => x.Key,x => x.Value);
         }
 
@@ -26,9 +33,9 @@ namespace RestEndpoints.Core
             return new Contracts(endpointName, this);
         }
 
-        public Endpoints WhenMessageReceived(Action<string, object> dispatch)
+        public Endpoints WhenMessageReceived(Action<string, object> dispatcher)
         {
-            this.dispatch = dispatch;
+            this.dispatch = dispatcher;
             return this;
         }
 
@@ -63,7 +70,7 @@ namespace RestEndpoints.Core
                     { endpointName, contracts.Select(c => ToDescriptor(c, endpointName)).ToArray() }
                 };
 
-                return new Endpoints(this.endpoints.map.Union(thisEndpoint));
+                return new Endpoints(this.endpoints.map.Union(thisEndpoint), this.endpoints.dispatch);
             }
         }
 

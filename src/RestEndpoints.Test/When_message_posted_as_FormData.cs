@@ -46,11 +46,11 @@ namespace RestEndpoints.Test
 
     public class When_message_posted_as_FormData
     {
-        private readonly ContractInstanceFormDataFormatter formatter;
+        private readonly ContractInstanceFormatter formatter;
 
         public When_message_posted_as_FormData()
         {
-            formatter = new ContractInstanceFormDataFormatter();
+            formatter = new ContractInstanceFormatter();
         }
 
         [Fact]
