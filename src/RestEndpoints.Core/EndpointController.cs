@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -47,12 +48,21 @@ namespace RestEndpoints.Core
         public HttpResponseMessage Post(string endpointName, string contractName, ContractInstance instance)
         {
             var descriptor = endpoints.FindContract(endpointName, contractName);
+            
+            try
+            {
+                var message = instance.CreateMessage(descriptor.Type);
 
-            var message = instance.CreateMessage(descriptor.Type);
+                this.endpoints.Dispatch(endpointName, message);
 
-            this.endpoints.Dispatch(endpointName, message);
+                return Request.CreateResponse(descriptor);
+            }
+            catch (MessageInstantiationException ex)
+            {
+                descriptor.ErrorMessages = ex.ErrorMessages;
 
-            return Request.CreateResponse(descriptor);
+                return Request.CreateResponse(descriptor);
+            }
         }
     }
 }

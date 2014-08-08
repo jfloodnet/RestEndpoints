@@ -30,6 +30,7 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
         public string TestName { get; set; }
         public string StringProperty { get; set; }
         public int IntegerProperty { get; set; }
+        public ExecuteBillRunCommand NestedBill { get; set; }
     }
 
     public class WinSaleCommand : Sales
@@ -37,6 +38,7 @@ namespace NServiceBus.ReSTEndpoint.SelfHost
         public string TestName { get; set; }
         public string StringProperty { get; set; }
         public int IntegerProperty { get; set; }
+        public PostInvoiceCommand Nested { get; set; }
     }
 
     public class QualifyLeadCommand : Sales

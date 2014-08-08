@@ -18,5 +18,10 @@ namespace RestEndpoints.Core.Utils
                 return false;
             }
         }
+
+        public static object Convert(this string text, Type conversionType)
+        {
+            return TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(text);
+        }
     }
 }

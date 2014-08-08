@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using RestEndpoints.Core.Utils;
 
 namespace RestEndpoints.Core.Models
@@ -15,23 +17,63 @@ namespace RestEndpoints.Core.Models
 
         public override object CreateMessage(Type type)
         {
-            var contract = Activator.CreateInstance(type);
+            var exceptions = new Dictionary<string, Exception>();
+            var properties = Property.From(message);
+            var instance = CreateObject(type, properties, exceptions);
+            if (exceptions.Any())
+                throw new MessageInstantiationException(exceptions.Select(kvp => string.Format("{0} : {1}", kvp.Key, kvp.Value.Message)).ToArray());
 
-            foreach (var property in type.GetProperties())
+            return instance;
+        }
+
+        private object CreateObject(Type type, Property[] properties, Dictionary<string, Exception> exceptions)
+        {
+            if (!properties.Any())
+                return null;
+
+            var root = Activator.CreateInstance(type);
+
+            foreach (var info in type.GetProperties())
             {
-                var propertyValue = message[property.Name];
+                var property = properties.First(x => x.Name == info.Name);
 
-                if (string.IsNullOrEmpty(propertyValue))
-                    continue;
-
-                object value = null;
-                if (propertyValue.TryConvert(property.PropertyType, out value))
+                try
                 {
-                    property.SetValue(contract, value);
+                    SetValue(root, property, info, exceptions);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(property.FullName, ex);
                 }
             }
 
-            return contract;
+            return root;
+        }
+
+        private void SetValue(object root, Property property, PropertyInfo info, Dictionary<string, Exception> exceptions)
+        {
+            object value = null;
+            if (property.IsLeaf() && property.HasValue())
+            {
+                value = property.Value.Convert(info.PropertyType);
+            }
+            else
+            {
+                value = CreateObject(info.PropertyType, property.Properties, exceptions);
+            }
+            info.SetValue(root, value);
+        }
+
+    }
+
+
+    public class MessageInstantiationException : Exception
+    {
+        public readonly string[] ErrorMessages;
+
+        public MessageInstantiationException(string[] errorMessage)
+        {
+            this.ErrorMessages = errorMessage;
         }
     }
 }
