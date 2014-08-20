@@ -1,4 +1,5 @@
-﻿<html>
+﻿@using Utils
+<html>
 <head>
     <title>RESTEndpoints</title>
 
@@ -10,7 +11,7 @@
         </div>
         <h1>Welcome to Restful Endpoints!</h1>
         <div id="bugs">
-            @Raw(RestEndpoints.Core.Models.Editor.For(Model))
+            @Raw(Editor.For(Model))
         </div>
     </body>
 </html>

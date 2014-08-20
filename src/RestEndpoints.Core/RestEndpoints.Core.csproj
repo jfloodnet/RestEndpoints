@@ -105,11 +105,11 @@
     <Compile Include="Models\ContractDescriptor.cs" />
     <Compile Include="EndpointController.cs" />
     <Compile Include="Models\ContractInstance.cs" />
-    <Compile Include="Models\Editor.cs" />
+    <Compile Include="Utils\Editor.cs" />
     <Compile Include="Models\FormDataContractInstance.cs" />
     <Compile Include="Models\JsonContractInstance.cs" />
     <Compile Include="Models\Property.cs" />
-    <Compile Include="Models\PropertyHelper.cs" />
+    <Compile Include="Utils\PropertyDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Templating\Templates.cs" />
     <Compile Include="Utils\TypeConverter.cs" />

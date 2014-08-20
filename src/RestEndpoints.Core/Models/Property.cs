@@ -17,19 +17,22 @@ namespace RestEndpoints.Core.Models
             this.FullName = name;
             this.Properties = properties;
 
-            MakeFullName(this.FullName, properties);
+            this.ImposeHierarchy(this.FullName);
         }
 
-        public static void MakeFullName(string hierarchy, Property[] properties)
+        private void ImposeHierarchy(string hierarchy)
         {
-            foreach (var property in properties)
+            this.Properties.ToList().ForEach(property =>
             {
-                property.FullName = string.Join(".", hierarchy, property.Name);
+                property.PrefixName(hierarchy);
                 if (!property.IsLeaf())
-                {
-                    MakeFullName(property.FullName, property.Properties);
-                }
-            }
+                    property.ImposeHierarchy(property.FullName);
+            });
+        }
+
+        private string PrefixName(string hierarchy)
+        {
+            return this.FullName = string.Join(".", hierarchy, Name);
         }
 
         public Property(string name, string nest)
@@ -38,7 +41,6 @@ namespace RestEndpoints.Core.Models
             this.FullName = name;
             this.Value = nest;
         }
-
 
         public bool HasValue()
         {
@@ -54,7 +56,6 @@ namespace RestEndpoints.Core.Models
         {
             return string.IsNullOrEmpty(Value);
         }
-
 
         public static Property[] From(Dictionary<string, string> message)
         {
@@ -73,8 +74,7 @@ namespace RestEndpoints.Core.Models
                 if (g.Values.Count() > 1)
                 {
                     return new Property(
-                        g.Name,
-                        Property.From(
+                        g.Name, Property.From(
                             ScopeDownToCurrentProperty(g.Values)));
                 }
 

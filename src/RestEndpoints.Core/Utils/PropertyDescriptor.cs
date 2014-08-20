@@ -3,24 +3,24 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 
-namespace RestEndpoints.Core.Models
+namespace RestEndpoints.Core.Utils
 {
-    internal class PropertyHelper
+    internal class PropertyDescriptor
     {
         // Delegate type for a by-ref property getter
         private delegate TValue ByRefFunc<TDeclaringType, TValue>(ref TDeclaringType arg);
 
         private static readonly MethodInfo CallPropertyGetterOpenGenericMethod =
-            typeof(PropertyHelper).GetTypeInfo().GetDeclaredMethod("CallPropertyGetter");
+            typeof(PropertyDescriptor).GetTypeInfo().GetDeclaredMethod("CallPropertyGetter");
 
         private static readonly MethodInfo CallPropertyGetterByReferenceOpenGenericMethod =
-            typeof(PropertyHelper).GetTypeInfo().GetDeclaredMethod("CallPropertyGetterByReference");
+            typeof(PropertyDescriptor).GetTypeInfo().GetDeclaredMethod("CallPropertyGetterByReference");
 
         private static readonly MethodInfo CallPropertySetterOpenGenericMethod =
-            typeof(PropertyHelper).GetTypeInfo().GetDeclaredMethod("CallPropertySetter");
+            typeof(PropertyDescriptor).GetTypeInfo().GetDeclaredMethod("CallPropertySetter");
 
-        private static readonly ConcurrentDictionary<Type, PropertyHelper[]> ReflectionCache =
-            new ConcurrentDictionary<Type, PropertyHelper[]>();
+        private static readonly ConcurrentDictionary<Type, PropertyDescriptor[]> ReflectionCache =
+            new ConcurrentDictionary<Type, PropertyDescriptor[]>();
 
         private readonly Func<object, object> _valueGetter;
 
@@ -29,7 +29,7 @@ namespace RestEndpoints.Core.Models
         ///
         /// This constructor does not cache the helper. For caching, use GetProperties.
         /// </summary>
-        public PropertyHelper(PropertyInfo property, string propertyName)
+        public PropertyDescriptor(PropertyInfo property, string propertyName)
         {
             Property = property;
             Name = propertyName;
@@ -47,24 +47,12 @@ namespace RestEndpoints.Core.Models
 
         /// <summary>
         /// Creates and caches fast property helpers that expose getters for every public get property on the
-        /// underlying type.
-        /// </summary>
-        /// <param name="instance">the instance to extract property accessors for.</param>
-        /// <returns>a cached array of all public property getters from the underlying type of target instance.
-        /// </returns>
-        public static PropertyHelper[] GetProperties(object instance)
-        {
-            return GetProperties(instance.GetType());
-        }
-
-        /// <summary>
-        /// Creates and caches fast property helpers that expose getters for every public get property on the
         /// specified type.
         /// </summary>
         /// <param name="type">the type to extract property accessors for.</param>
         /// <returns>a cached array of all public property getters from the type of target instance.
         /// </returns>
-        public static PropertyHelper[] GetProperties(Type type)
+        public static PropertyDescriptor[] GetProperties(Type type)
         {
             return GetProperties(type, CreateInstance, ReflectionCache);
         }
@@ -76,7 +64,7 @@ namespace RestEndpoints.Core.Models
         /// <param name="type">the type to extract property accessors for.</param>
         /// <returns>a cached array of all public property getters from the type of target instance.
         /// </returns>
-        private static PropertyHelper[] GetProperties(Type type, string propertyHierarchy)
+        private static PropertyDescriptor[] GetProperties(Type type, string propertyHierarchy)
         {
             return GetProperties(type, CreateInstance, ReflectionCache, propertyHierarchy);
         }
@@ -160,9 +148,9 @@ namespace RestEndpoints.Core.Models
             return (Action<object, object>)callPropertySetterDelegate;
         }
 
-        private static PropertyHelper CreateInstance(PropertyInfo property, string propertyHierarchy = null)
+        private static PropertyDescriptor CreateInstance(PropertyInfo property, string propertyHierarchy = null)
         {
-            return new PropertyHelper(property, propertyHierarchy);
+            return new PropertyDescriptor(property, propertyHierarchy);
         }
 
         // Called via reflection
@@ -190,10 +178,10 @@ namespace RestEndpoints.Core.Models
             setter((TDeclaringType)target, (TValue)value);
         }
 
-        protected static PropertyHelper[] GetProperties(
+        protected static PropertyDescriptor[] GetProperties(
             Type type,
-            Func<PropertyInfo, string, PropertyHelper> createPropertyHelper,
-            ConcurrentDictionary<Type, PropertyHelper[]> cache,
+            Func<PropertyInfo, string, PropertyDescriptor> createPropertyHelper,
+            ConcurrentDictionary<Type, PropertyDescriptor[]> cache,
             string propertyHierarchy = null)
         {
             // Unwrap nullable types. This means Nullable<T>.Value and Nullable<T>.HasValue will not be
@@ -201,9 +189,9 @@ namespace RestEndpoints.Core.Models
             type = Nullable.GetUnderlyingType(type) ?? type;
 
             // Using an array rather than IEnumerable, as target will be called on the hot path numerous times.
-            PropertyHelper[] helpers;
+            PropertyDescriptor[] descriptors;
 
-            if (!cache.TryGetValue(type, out helpers))
+            if (!cache.TryGetValue(type, out descriptors))
             {
                 var getPropertyName =
                     new Func<PropertyInfo, string>(pi => (propertyHierarchy == null ? "" : propertyHierarchy+".") + pi.Name);
@@ -223,11 +211,11 @@ namespace RestEndpoints.Core.Models
                 var complex = properties.Where(pi => !IsPrimitiveType(pi.PropertyType))
                     .SelectMany(pi => GetProperties(pi.PropertyType, getPropertyName(pi) ));
                 
-                helpers = primitives.Concat(complex).ToArray();
-                cache.TryAdd(type, helpers);
+                descriptors = primitives.Concat(complex).ToArray();
+                cache.TryAdd(type, descriptors);
             }
 
-            return helpers;
+            return descriptors;
         }
 
         public static bool IsPrimitiveType(Type fieldType)

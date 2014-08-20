@@ -9,6 +9,7 @@ namespace RestEndpoints.Core.Models
     public class FormDataContractInstance : ContractInstance
     {
         private readonly Dictionary<string, string> message;
+        private Dictionary<string, Exception>  exceptions = new Dictionary<string, Exception>();
 
         public FormDataContractInstance(Dictionary<string, string> value)
         {
@@ -17,16 +18,18 @@ namespace RestEndpoints.Core.Models
 
         public override object CreateMessage(Type type)
         {
-            var exceptions = new Dictionary<string, Exception>();
-            var properties = Property.From(message);
-            var instance = CreateObject(type, properties, exceptions);
+            var instance = CreateMessage(type, Property.From(message));
+
             if (exceptions.Any())
-                throw new MessageInstantiationException(exceptions.Select(kvp => string.Format("{0} : {1}", kvp.Key, kvp.Value.Message)).ToArray());
+            {
+                throw MessageInstantiationException();
+            }
 
             return instance;
         }
 
-        private object CreateObject(Type type, Property[] properties, Dictionary<string, Exception> exceptions)
+
+        private object CreateMessage(Type type, Property[] properties)
         {
             if (!properties.Any())
                 return null;
@@ -39,7 +42,7 @@ namespace RestEndpoints.Core.Models
 
                 try
                 {
-                    SetValue(root, property, info, exceptions);
+                    SetValue(root, property, info);
                 }
                 catch (Exception ex)
                 {
@@ -50,7 +53,7 @@ namespace RestEndpoints.Core.Models
             return root;
         }
 
-        private void SetValue(object root, Property property, PropertyInfo info, Dictionary<string, Exception> exceptions)
+        private void SetValue(object root, Property property, PropertyInfo info)
         {
             object value = null;
             if (property.IsLeaf() && property.HasValue())
@@ -59,11 +62,15 @@ namespace RestEndpoints.Core.Models
             }
             else
             {
-                value = CreateObject(info.PropertyType, property.Properties, exceptions);
+                value = CreateMessage(info.PropertyType, property.Properties);
             }
             info.SetValue(root, value);
         }
 
+        private Exception MessageInstantiationException()
+        {
+            return new MessageInstantiationException(exceptions.Select(kvp => string.Format("{0} : {1}", kvp.Key, kvp.Value.Message)).ToArray());
+        }
     }
 
 
